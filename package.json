@@ -1,0 +1,48 @@
+{
+  "name": "webpack-imported",
+  "version": "1.0.0",
+  "description": "You chunks importing buddy",
+  "main": "dist/es5/index.js",
+  "scripts": {
+    "test": "ts-react-toolbox test",
+    "dev": "ts-react-toolbox dev",
+    "test:ci": "ts-react-toolbox test --runInBand --coverage",
+    "build": "ts-react-toolbox build",
+    "release": "ts-react-toolbox release",
+    "lint": "ts-react-toolbox lint",
+    "static": "ts-react-toolbox publish",
+    "format": "ts-react-toolbox format",
+    "analyze": "ts-react-toolbox analyze"
+  },
+  "repository": "https://github.com/theKashey/webpack-imported/",
+  "author": "theKashey <thekashey@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/lodash": "^4.14.138",
+    "@types/webpack": "^4.39.1",
+    "ts-react-toolbox": "^0.2.2"
+  },
+  "engines": {
+    "node": ">=8.5.0"
+  },
+  "peerDependencies": {
+    "react": "^16.3.0",
+    "styled-components": "^3.3.2"
+  },
+  "jsnext:main": "dist/es2015/index.js",
+  "module": "dist/es2015/index.js",
+  "types": "dist/es5/index.d.ts",
+  "files": [
+    "dist",
+    "react"
+  ],
+  "keywords": [
+    "webpack",
+    "stat.json",
+    "chunks",
+    "codesplitting"
+  ],
+  "dependencies": {
+    "tslib": "^1.10.0"
+  }
+}
