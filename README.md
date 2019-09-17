@@ -14,10 +14,10 @@ module.exports = {
   ]
 };
 ```
-This will output `imported.json` as a one of emitted assets, with all the information carefully sorted.
+This will output `imported.json` as a one of the emitted assets, with all the information carefully sorted.
 
 ## SSR API
-- `importedAssets(stats, chunks, [tracker])` - return all assets accosiated with provided chunks.
+- `importedAssets(stats, chunks, [tracker])` - return all assets associated with provided chunks.
 Could be provided a `tracker` to prevent duplications between runs.
 - `createImportedTracker()` - creates a duplication prevention tracker
 
@@ -32,7 +32,7 @@ relatedAssets.scripts.preload // list scripts to preload
 relatedAssets.styles.load // list styles to load
 relatedAssets.styles.preload // list styles to preload
 
-importedStat.config.publicPath // public path used on build time
+importedStat.config.publicPath // public path used at build time
 ```
 
 with tracking
@@ -59,7 +59,7 @@ const relatedAssets2 = importedAssets(importedStat, ['home'], tracker);
 import {createImportedTracker, WebpackImportedProvider, WebpackPrefetch} from "webpack-imported/react";
 import importedStat from "build/imported.json";
 
-const tracker = createImportedTracker();// this is optional, only needed is you render is multipart(head/body)
+const tracker = createImportedTracker();// this is optional, only needed if your render is multipart(head/body)
 
 <WebpackImportedProvider tracker={tracker}>
   <WebpackImport stats={importedStat} chunks={['main']} />
@@ -71,8 +71,8 @@ const tracker = createImportedTracker();// this is optional, only needed is you 
 Never use this option for the main chunk.
 - [`async`]=true] - loads scripts with `async` tag, use `deferred` in other case.
 - [`critical-styles`=false] - enabled critical styles handling. No styles would be loaded or prefetched,
-but system would leave extra markup to prevent `MiniCssExtractPlugin` from adding them by itself.
-With this option enabled __you have to call__ `processImportedStyles` after application start to load the missing styles. 
+but system will leave extra markup to prevent `MiniCssExtractPlugin` from adding them by itself.
+With this option enabled __you have to call__ `processImportedStyles` after the application starts to load the missing styles. 
 
 
 
