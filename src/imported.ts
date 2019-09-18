@@ -38,7 +38,7 @@ const flattenType = (types: ChunkAsset[]): Record<string, string[]> => {
   const ret: Record<string, string[]> = {};
   types.forEach(chunk => {
     Object.keys(chunk).forEach(type => {
-      if (type in ret) {
+      if (!(type in ret)) {
         ret[type] = [];
       }
       ret[type].push(...chunk[type]);
