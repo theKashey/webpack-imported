@@ -19,7 +19,7 @@ const moduleToChunks = ({chunks}: Stats.ToJsonOutput) => {
 
 const getAssetType = (name: string) => extname(name).substr(1);
 
-const extractPrefetch = (prefetch: any[]): number[] => (
+const extractPrefetch = (prefetch: any[] = []): number[] => (
   Array.from(
     prefetch
       .map(({chunks}) => chunks as number[])
@@ -85,12 +85,11 @@ export const importStats = (stats: Stats.ToJsonOutput, extraProps: Record<string
     assets: getAssets(stats),
     moduleMap: moduleToChunks(stats),
   };
-}
+};
 
 // eslint-disable-next-line import/prefer-default-export
-export class ImportedPlugin extends Plugin {
+export class ImportedPlugin implements Plugin {
   constructor(private output: string, private options = {}, private cache = {}) {
-    super();
   }
 
   emitCallback = (compilation: compilation.Compilation, done: () => void) => {

@@ -1,7 +1,7 @@
 {
   "private": true,
-  "main": "../dist/es5/react.js",
-  "jsnext:main": "../dist/es2015/react.js",
-  "module": "../dist/es2015/react.js",
-  "types": "../dist/es2015/react.d.ts"
+  "main": "../dist/es5/react/index.js",
+  "jsnext:main": "../dist/es2015/react/index.js",
+  "module": "../dist/es2015/react/index.js",
+  "types": "../dist/es2015/react/index.d.ts"
 }

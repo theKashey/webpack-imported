@@ -25,16 +25,13 @@
   "engines": {
     "node": ">=8.5.0"
   },
-  "peerDependencies": {
-    "react": "^16.3.0",
-    "styled-components": "^3.3.2"
-  },
   "jsnext:main": "dist/es2015/index.js",
   "module": "dist/es2015/index.js",
   "types": "dist/es5/index.d.ts",
   "files": [
     "dist",
-    "react"
+    "react",
+    "css"
   ],
   "keywords": [
     "webpack",
