@@ -68,7 +68,7 @@ const resolveAliases = (cwd: string, aliases: Record<string, string>): Record<st
   Object.keys(aliases).reduce((acc, key) => ({...acc, [key]: relative(cwd, aliases[key])}), {})
 );
 
-export const importStats = (stats: Stats.ToJsonOutput, extraProps: Record<string, any>): ImportedStat => {
+export const importStats = (stats: Stats.ToJsonOutput, extraProps: Record<string, any> = {}): ImportedStat => {
   const cwd = process.cwd();
   const {publicPath, outputPath} = stats;
 

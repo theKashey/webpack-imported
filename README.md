@@ -6,7 +6,7 @@ webpack-imported
 # Server side API
 ## Webpack plugin
 ```js
-const {ImportedPlugin} = require('webpack-imported/server');
+const {ImportedPlugin} = require('webpack-imported');
 
 module.exports = {
   plugins: [
@@ -15,6 +15,15 @@ module.exports = {
 };
 ```
 This will output `imported.json` as a one of the emitted assets, with all the information carefully sorted.
+
+## Stat.json
+If you have only `stat.json` generated somehow you can convert into into "imported" format
+```js
+import {importStats} from "webpack-imported";
+import stats from 'build/stats.json';
+
+const importedStat = importStats(stats);
+``` 
 
 ## SSR API
 - `importedAssets(stats, chunks, [tracker])` - return all assets associated with provided chunks.
@@ -56,7 +65,7 @@ const relatedAssets2 = importedAssets(importedStat, ['home'], tracker);
 - `WebpackImport` - chunk importer
 - `processImportedStyles` - helper for critical styles.
 ```js
-import {createImportedTracker, WebpackImportedProvider, WebpackPrefetch} from "webpack-imported/react";
+import {createImportedTracker, WebpackImportedProvider, WebpackImport} from "webpack-imported/react";
 import importedStat from "build/imported.json";
 
 const tracker = createImportedTracker();// this is optional, only needed if your render is multipart(head/body)
