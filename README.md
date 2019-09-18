@@ -59,7 +59,7 @@ const relatedAssets2 = importedAssets(importedStat, ['home'], tracker);
 
 # Client side API
 
-## React bindings (better at SSR)
+## React bindings (for SSR)
 - `createImportedTracker()` - creates a duplication prevention tracker
 - `WebpackImportedProvider` - wires tracker down to React context
 - `WebpackImport` - chunk importer
@@ -84,7 +84,6 @@ but system will leave extra markup to prevent `MiniCssExtractPlugin` from adding
 With this option enabled __you have to call__ `processImportedStyles` after the application starts to load the missing styles. 
 
 
-
 # Related
 ### Get stats from webpack
 - [stats-webpack-plugin](https://github.com/unindented/stats-webpack-plugin)
@@ -93,6 +92,11 @@ With this option enabled __you have to call__ `processImportedStyles` after the 
 ### Handle chunks dependencies
 - [webpack-flush-chunks](https://github.com/faceyspacey/webpack-flush-chunks)
 
+### React Lazy Loading
+- [react-imported-component](https://github.com/theKashey/react-imported-component)
+
+### CSS Critical extraction
+- [used-styles](https://github.com/theKashey/used-styles)
 
 # Licence 
 MIT
