@@ -1,6 +1,8 @@
 webpack-imported
 ======
-📝stats-webpack-plugin and 💩webpack-flush-chunks had a baby!
+We'll get your asses imported in a right way.
+
+> 📝 stats-webpack-plugin and 💩webpack-flush-chunks had a baby!
 
 > code splitting, prefetching, and resource management.
 
