@@ -1,6 +1,6 @@
 {
   "name": "webpack-imported",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "You chunks importing buddy",
   "main": "dist/es5/index.js",
   "scripts": {
