@@ -33,12 +33,21 @@ export interface KnownScript {
   prefetch?: boolean;
   anonymous?: boolean;
   async?: boolean;
+  module?: boolean;
 }
 
-export const LoadScript: React.FC<KnownScript> = ({href, prefetch, anonymous, async}) => (
+export const LoadScript: React.FC<KnownScript> = ({href, prefetch, anonymous, async, module}) => (
   <>
     <PrefetchScript href={href} anonymous={anonymous}/>
-    {!prefetch && <script async={!!async} defer={!async} crossOrigin={anonymous && "anonymous"} src={href}/>}
+    {!prefetch && (
+      <script
+        async={!!async}
+        defer={!async}
+        crossOrigin={anonymous && "anonymous"}
+        src={href}
+        type={module ? "module" : undefined}
+      />
+    )}
   </>
 );
 

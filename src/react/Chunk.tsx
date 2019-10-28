@@ -10,6 +10,8 @@ export interface WebpackImportProps {
   chunks: string | string[];
   prefetch?: boolean;
   anonymous?: boolean;
+  async?: boolean;
+  module?: boolean;
   criticalCSS?: boolean;
   publicPath?: string;
 }
@@ -21,6 +23,8 @@ export const WebpackImport: React.FC<WebpackImportProps> = (
     prefetch,
     criticalCSS,
     anonymous,
+    async = true,
+    module,
     publicPath = stats.config.publicPath
   }) => {
   const tracker = useContext(PrefetchChunkCollectorContext);
@@ -30,7 +34,7 @@ export const WebpackImport: React.FC<WebpackImportProps> = (
     <>
       {
         scripts.load.map(asset => (
-          <LoadScript prefetch={prefetch} href={`${publicPath}${asset}`} anonymous={anonymous}/>
+          <LoadScript prefetch={prefetch} href={`${publicPath}${asset}`} async={async} module={module} anonymous={anonymous}/>
         ))
       }
 

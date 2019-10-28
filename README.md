@@ -2,6 +2,9 @@ webpack-imported
 ======
 📝stats-webpack-plugin and 💩webpack-flush-chunks had a baby!
 
+> code splitting, prefetching, and resource management.
+
+WebpackPlugin + ServerSide API + React Components(separate entrypoint)
 
 # Server side API
 ## Webpack plugin
@@ -78,7 +81,9 @@ const tracker = createImportedTracker();// this is optional, only needed if your
 `WebpackImport` has many props:
 - [`preload`=false] - only preloads resources. If preload is set resources would be loaded via network, but not executed. 
 Never use this option for the main chunk.
-- [`async`]=true] - loads scripts with `async` tag, use `deferred` in other case.
+- [`anonymous`=false] - should it be loaded as anonymous 
+- [`async`=true] - loads scripts with `async` attribute, uses `deferred` in other case.
+- [`module`=false] - loads scripts with `module` attribute
 - [`critical-styles`=false] - enabled critical styles handling. No styles would be loaded or prefetched,
 but system will leave extra markup to prevent `MiniCssExtractPlugin` from adding them by itself.
 With this option enabled __you have to call__ `processImportedStyles` after the application starts to load the missing styles. 
