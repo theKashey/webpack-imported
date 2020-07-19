@@ -3,19 +3,47 @@ import {useContext} from "react";
 import {PrefetchChunkCollectorContext} from "./context";
 import {ImportedStat} from "../types";
 import {importAssets} from "../imported";
-import {LoadCriticalStyle, LoadScript, LoadStyle} from "./Prefetch";
+import {LoadCriticalStyle, LoadScript, LoadStyle, PrefetchStyle} from "./Prefetch";
 
 export interface WebpackImportProps {
+  /**
+   * reference to `imported.stat`
+   */
   stats: ImportedStat;
+  /**
+   * list of chunks to load
+   */
   chunks: string | string[];
+  /**
+   * should prefetch be used instead of preload
+   */
   prefetch?: boolean;
+  /**
+   * should scripts be loaded as anonymous
+   */
   anonymous?: boolean;
+  /**
+   * should scripts be loaded as async (default is deferred)
+   */
   async?: boolean;
+  /**
+   * should scripts be loaded as ESM modules
+   */
   module?: boolean;
-  criticalCSS?: boolean;
+  /**
+   * should found CSS files be considered as critical and NOT loaded
+   * and if yes - should they be at least prefetched
+   */
+  criticalCSS?: boolean | "prefetch";
+  /**
+   * public path for all assets
+   */
   publicPath?: string;
 }
 
+/**
+ * Preloads all given chunks
+ */
 export const WebpackImport: React.FC<WebpackImportProps> = (
   {
     stats,
@@ -34,14 +62,25 @@ export const WebpackImport: React.FC<WebpackImportProps> = (
     <>
       {
         scripts.load.map(asset => (
-          <LoadScript prefetch={prefetch} href={`${publicPath}${asset}`} async={async} module={module} anonymous={anonymous}/>
+          <LoadScript
+            prefetch={prefetch}
+            href={`${publicPath}${asset}`}
+            async={async}
+            module={module}
+            anonymous={anonymous}
+          />
         ))
       }
 
       {
         styles.load.map(asset => (
           criticalCSS
-            ? <LoadCriticalStyle href={`${publicPath}${asset}`}/>
+            ? (
+              <>
+                {criticalCSS === "prefetch" && <PrefetchStyle href={`${publicPath}${asset}`}/>}
+                <LoadCriticalStyle href={`${publicPath}${asset}`}/>
+              </>
+            )
             : <LoadStyle href={`${publicPath}${asset}`}/>
         ))
       }

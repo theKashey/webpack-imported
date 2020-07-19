@@ -14,6 +14,9 @@ export type ChunkAsset = Record<string, string[]>;
 export type Chunks = Record<string, Chunk>;
 export type ChunkMap = Record<number, ChunkAsset>;
 
+/**
+ * Structure representing the saved file
+ */
 export interface ImportedStat {
   config: {
     publicPath: string,

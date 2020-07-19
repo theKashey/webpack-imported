@@ -87,7 +87,9 @@ export const importStats = (stats: Stats.ToJsonOutput, extraProps: Record<string
   };
 };
 
-// eslint-disable-next-line import/prefer-default-export
+/**
+ * Webpack plugin
+ */
 export class ImportedPlugin implements Plugin {
   constructor(private output: string, private options = {}, private cache = {}) {
   }
