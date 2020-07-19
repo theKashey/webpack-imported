@@ -12,12 +12,16 @@ export interface UnknownLink {
 export type KnownLink = Omit<UnknownLink, 'as'>;
 export type KnownTypedLink = Omit<UnknownLink, 'as' | 'type'>;
 
-const LinkPrefetch: React.FC<UnknownLink> = ({href, as, type, anonymous, ...rest}) => (
+const LinkPreload: React.FC<UnknownLink> = ({href, as, type, anonymous, ...rest}) => (
   <link rel="preload" as={as} href={href} type={type} crossOrigin={anonymous && "anonymous"} {...rest} />
 );
 
+const LinkPrefetch: React.FC<UnknownLink> = ({href, as, type, anonymous, ...rest}) => (
+  <link rel="prefetch" as={as} href={href} type={type} crossOrigin={anonymous && "anonymous"} {...rest} />
+);
+
 export const PrefetchFont: React.FC<KnownLink> = ({href, type, anonymous, ...rest}) => (
-  <LinkPrefetch as="font" href={href} type={type} anonymous={anonymous} {...rest} />
+  <LinkPreload as="font" href={href} type={type} anonymous={anonymous} {...rest} />
 );
 
 export const PrefetchStyle: React.FC<KnownTypedLink> = ({href, ...rest}) => (
@@ -25,7 +29,7 @@ export const PrefetchStyle: React.FC<KnownTypedLink> = ({href, ...rest}) => (
 );
 
 export const PrefetchScript: React.FC<KnownTypedLink> = ({href, ...rest}) => (
-  <LinkPrefetch href={href} as="script" type="application/javascript" {...rest} />
+  <LinkPreload href={href} as="script" type="application/javascript" {...rest} />
 );
 
 export interface KnownScript {
