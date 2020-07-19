@@ -28,6 +28,10 @@ export const PrefetchStyle: React.FC<KnownTypedLink> = ({href, ...rest}) => (
   <LinkPrefetch as="style" type="text/css" href={href}  {...rest} />
 );
 
+export const PreloadStyle: React.FC<KnownTypedLink> = ({href, ...rest}) => (
+  <LinkPreload as="style" type="text/css" href={href}  {...rest} />
+);
+
 export const PrefetchScript: React.FC<KnownTypedLink> = ({href, ...rest}) => (
   <LinkPreload href={href} as="script" type="application/javascript" {...rest} />
 );

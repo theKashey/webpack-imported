@@ -3,7 +3,7 @@ import {useContext} from "react";
 import {PrefetchChunkCollectorContext} from "./context";
 import {ImportedStat} from "../types";
 import {importAssets} from "../imported";
-import {LoadCriticalStyle, LoadScript, LoadStyle, PrefetchStyle} from "./Prefetch";
+import {LoadCriticalStyle, LoadScript, LoadStyle, PrefetchStyle, PreloadStyle} from "./Prefetch";
 
 export interface WebpackImportProps {
   /**
@@ -32,9 +32,9 @@ export interface WebpackImportProps {
   module?: boolean;
   /**
    * should found CSS files be considered as critical and NOT loaded
-   * and if yes - should they be at least prefetched
+   * and if yes - should they be prefetched or preloaded (or nothing)
    */
-  criticalCSS?: boolean | "prefetch";
+  criticalCSS?: boolean | "prefetch" | "preload";
   /**
    * public path for all assets
    */
@@ -78,6 +78,7 @@ export const WebpackImport: React.FC<WebpackImportProps> = (
             ? (
               <>
                 {criticalCSS === "prefetch" && <PrefetchStyle href={`${publicPath}${asset}`}/>}
+                {criticalCSS === "preload" && <PreloadStyle href={`${publicPath}${asset}`}/>}
                 <LoadCriticalStyle href={`${publicPath}${asset}`}/>
               </>
             )
