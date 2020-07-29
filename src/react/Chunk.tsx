@@ -3,7 +3,8 @@ import {useContext} from "react";
 import {PrefetchChunkCollectorContext} from "./context";
 import {ImportedStat} from "../types";
 import {importAssets} from "../imported";
-import {LoadCriticalStyle, LoadScript, LoadStyle, PrefetchStyle, PreloadStyle} from "./Prefetch";
+import {LoadCriticalStyle, LoadScript, LoadStyle} from "./Load";
+import {PrefetchScript, PrefetchStyle, PreloadScript, PreloadStyle} from "./Atoms";
 
 export interface WebpackImportProps {
   /**
@@ -15,15 +16,15 @@ export interface WebpackImportProps {
    */
   chunks: string | string[];
   /**
-   * should prefetch be used instead of preload
+   * should prefetch or preload be used
    */
-  prefetch?: boolean;
+  prefetch?: 'prefetch' | 'preload'
   /**
    * should scripts be loaded as anonymous
    */
   anonymous?: boolean;
   /**
-   * should scripts be loaded as async (default is deferred)
+   * should scripts be loaded as async (default is defer)
    */
   async?: boolean;
   /**
@@ -62,13 +63,16 @@ export const WebpackImport: React.FC<WebpackImportProps> = (
     <>
       {
         scripts.load.map(asset => (
-          <LoadScript
-            prefetch={prefetch}
-            href={`${publicPath}${asset}`}
-            async={async}
-            module={module}
-            anonymous={anonymous}
-          />
+          <>
+            {prefetch === 'prefetch' && <PrefetchScript href={`${publicPath}${asset}`} anonymous={anonymous}/>}
+            {prefetch === 'preload' && <PreloadScript href={`${publicPath}${asset}`} anonymous={anonymous}/>}
+            <LoadScript
+              href={`${publicPath}${asset}`}
+              async={async}
+              module={module}
+              anonymous={anonymous}
+            />
+          </>
         ))
       }
 
@@ -83,6 +87,63 @@ export const WebpackImport: React.FC<WebpackImportProps> = (
               </>
             )
             : <LoadStyle href={`${publicPath}${asset}`}/>
+        ))
+      }
+    </>
+  )
+};
+
+export interface WebpackPreloadProps {
+  /**
+   * reference to `imported.stat`
+   */
+  stats: ImportedStat;
+  /**
+   * list of chunks to load
+   */
+  chunks: string | string[];
+  /**
+   * should prefetch or preload be used
+   */
+  mode: 'prefetch' | 'preload'
+  /**
+   * should scripts be loaded as anonymous
+   */
+  anonymous?: boolean;
+  /**
+   * public path for all assets
+   */
+  publicPath?: string;
+}
+
+/**
+ * Preloads all given chunks
+ */
+export const WebpackPreload: React.FC<WebpackPreloadProps> = (
+  {
+    stats,
+    chunks,
+    mode,
+    anonymous,
+    publicPath = stats.config.publicPath
+  }) => {
+  const tracker = useContext(PrefetchChunkCollectorContext);
+  const {scripts, styles} = importAssets(stats, chunks, tracker);
+
+  return (
+    <>
+      {
+        scripts.load.map(asset => (
+          mode === 'prefetch'
+            ? <PrefetchScript href={`${publicPath}${asset}`} anonymous={anonymous}/>
+            : <PreloadScript href={`${publicPath}${asset}`} anonymous={anonymous}/>
+        ))
+      }
+      {
+        styles.load.map(asset => (
+          mode === 'prefetch'
+            ? <PrefetchStyle href={`${publicPath}${asset}`}/>
+            : <PreloadStyle href={`${publicPath}${asset}`}/>
         ))
       }
     </>
