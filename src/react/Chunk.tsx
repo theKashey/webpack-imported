@@ -18,7 +18,7 @@ export interface WebpackImportProps {
   /**
    * should prefetch or preload be used
    */
-  prefetch?: 'prefetch' | 'preload'
+  scriptsHint?: 'prefetch' | 'preload'
   /**
    * should scripts be loaded as anonymous
    */
@@ -44,12 +44,21 @@ export interface WebpackImportProps {
 
 /**
  * Preloads all given chunks
+ * @example
+ * <WebpackImport
+ *  stats={data}
+ *  chunks={chunks}
+ *  async={priority >= 0}
+ *  scriptsHint={priority >= 1 ? 'preload' : 'prefetch'}
+ *  criticalCSS="prefetch"
+ *  publicPath={`${CDN}${data.config.publicPath}${mode}/`}
+ * />
  */
 export const WebpackImport: React.FC<WebpackImportProps> = (
   {
     stats,
     chunks,
-    prefetch,
+    scriptsHint,
     criticalCSS,
     anonymous,
     async = true,
@@ -64,8 +73,8 @@ export const WebpackImport: React.FC<WebpackImportProps> = (
       {
         scripts.load.map(asset => (
           <>
-            {prefetch === 'prefetch' && <PrefetchScript href={`${publicPath}${asset}`} anonymous={anonymous}/>}
-            {prefetch === 'preload' && <PreloadScript href={`${publicPath}${asset}`} anonymous={anonymous}/>}
+            {scriptsHint === 'prefetch' && <PrefetchScript href={`${publicPath}${asset}`} anonymous={anonymous}/>}
+            {scriptsHint === 'preload' && <PreloadScript href={`${publicPath}${asset}`} anonymous={anonymous}/>}
             <LoadScript
               href={`${publicPath}${asset}`}
               async={async}
@@ -105,7 +114,11 @@ export interface WebpackPreloadProps {
   /**
    * should prefetch or preload be used
    */
-  mode: 'prefetch' | 'preload'
+  scriptsHint: 'prefetch' | 'preload';
+  /**
+   * should prefetch or preload be used
+   */
+  stylesHint: 'prefetch' | 'preload'
   /**
    * should scripts be loaded as anonymous
    */
@@ -117,13 +130,23 @@ export interface WebpackPreloadProps {
 }
 
 /**
- * Preloads all given chunks
+ * Preloads(or prefetches) all given chunks
+ *
+ * @example
+ * <WebpackPreload
+ *  stats={data}
+ *  chunks={getMarkedChunks(marks)}
+ *  scriptsHint={preload ? 'preload' : 'prefetch'}
+ *  stylesHint='prefetch'
+ *  publicPath={`${CDN}${data.config.publicPath}${mode}/`}
+ * />
  */
 export const WebpackPreload: React.FC<WebpackPreloadProps> = (
   {
     stats,
     chunks,
-    mode,
+    scriptsHint,
+    stylesHint,
     anonymous,
     publicPath = stats.config.publicPath
   }) => {
@@ -134,14 +157,14 @@ export const WebpackPreload: React.FC<WebpackPreloadProps> = (
     <>
       {
         scripts.load.map(asset => (
-          mode === 'prefetch'
+          scriptsHint === 'prefetch'
             ? <PrefetchScript href={`${publicPath}${asset}`} anonymous={anonymous}/>
             : <PreloadScript href={`${publicPath}${asset}`} anonymous={anonymous}/>
         ))
       }
       {
         styles.load.map(asset => (
-          mode === 'prefetch'
+          stylesHint === 'prefetch'
             ? <PrefetchStyle href={`${publicPath}${asset}`}/>
             : <PreloadStyle href={`${publicPath}${asset}`}/>
         ))
