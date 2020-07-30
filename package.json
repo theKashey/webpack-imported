@@ -22,7 +22,7 @@
     "@size-limit/preset-small-lib": "^2.1.5",
     "@types/lodash": "^4.14.138",
     "@types/webpack": "^4.39.1",
-    "ts-react-toolbox": "^0.2.2"
+    "ts-react-toolbox": "^0.2.20"
   },
   "engines": {
     "node": ">=8.5.0"
