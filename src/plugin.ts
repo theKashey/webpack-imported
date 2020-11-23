@@ -1,4 +1,5 @@
 import {extname, relative} from 'path';
+import {writeFileSync} from 'fs';
 import {Compiler, Plugin, compilation, Configuration, Stats} from "webpack";
 import {ChunkMap, Chunks, ImportedStat, Asset} from "./types";
 
@@ -87,11 +88,18 @@ export const importStats = (stats: Stats.ToJsonOutput, extraProps: Record<string
   };
 };
 
+interface Options {
+  /**
+   * bypasses webpack and saves file directly to the FS
+   */
+  saveToFile?: string;
+}
+
 /**
  * Webpack plugin
  */
 export class ImportedPlugin implements Plugin {
-  constructor(private output: string, private options = {}, private cache = {}) {
+  constructor(private output: string, private options: Options = {}, private cache = {}) {
   }
 
   emitCallback = (compilation: compilation.Compilation, done: () => void) => {
@@ -120,14 +128,20 @@ export class ImportedPlugin implements Plugin {
 
     const stringResult = JSON.stringify(result, null, 2);
 
-    compilation.assets[this.output] = {
-      size() {
-        return stringResult.length
-      },
-      source() {
-        return stringResult;
-      }
-    };
+    if (this.output) {
+      compilation.assets[this.output] = {
+        size() {
+          return stringResult.length
+        },
+        source() {
+          return stringResult;
+        }
+      };
+    }
+
+    if (this.options.saveToFile) {
+      writeFileSync(this.options.saveToFile, stringResult);
+    }
 
     done();
   };
