@@ -72,7 +72,7 @@ export const WebpackImport: React.FC<WebpackImportProps> = (
     <>
       {
         scripts.load.map(asset => (
-          <>
+          <React.Fragment key={asset}>
             {scriptsHint === 'prefetch' && <PrefetchScript href={`${publicPath}${asset}`} anonymous={anonymous}/>}
             {scriptsHint === 'preload' && <PreloadScript href={`${publicPath}${asset}`} anonymous={anonymous}/>}
             <LoadScript
@@ -81,21 +81,25 @@ export const WebpackImport: React.FC<WebpackImportProps> = (
               module={module}
               anonymous={anonymous}
             />
-          </>
+          </React.Fragment>
         ))
       }
 
       {
         styles.load.map(asset => (
-          criticalCSS
-            ? (
-              <>
-                {criticalCSS === "prefetch" && <PrefetchStyle href={`${publicPath}${asset}`}/>}
-                {criticalCSS === "preload" && <PreloadStyle href={`${publicPath}${asset}`}/>}
-                <LoadCriticalStyle href={`${publicPath}${asset}`}/>
-              </>
-            )
-            : <LoadStyle href={`${publicPath}${asset}`}/>
+          <React.Fragment key={asset}>
+            {
+              criticalCSS
+                ? (
+                  <>
+                    {criticalCSS === "prefetch" && <PrefetchStyle href={`${publicPath}${asset}`}/>}
+                    {criticalCSS === "preload" && <PreloadStyle href={`${publicPath}${asset}`}/>}
+                    <LoadCriticalStyle href={`${publicPath}${asset}`}/>
+                  </>
+                )
+                : <LoadStyle href={`${publicPath}${asset}`}/>
+            }
+          </React.Fragment>
         ))
       }
     </>
@@ -157,16 +161,24 @@ export const WebpackPreload: React.FC<WebpackPreloadProps> = (
     <>
       {
         scripts.load.map(asset => (
-          scriptsHint === 'prefetch'
-            ? <PrefetchScript href={`${publicPath}${asset}`} anonymous={anonymous}/>
-            : <PreloadScript href={`${publicPath}${asset}`} anonymous={anonymous}/>
+          <React.Fragment key={asset}>
+            {
+              scriptsHint === 'prefetch'
+                ? <PrefetchScript href={`${publicPath}${asset}`} anonymous={anonymous}/>
+                : <PreloadScript href={`${publicPath}${asset}`} anonymous={anonymous}/>
+            }
+          </React.Fragment>
         ))
       }
       {
         styles.load.map(asset => (
-          stylesHint === 'prefetch'
-            ? <PrefetchStyle href={`${publicPath}${asset}`}/>
-            : <PreloadStyle href={`${publicPath}${asset}`}/>
+          <React.Fragment key={asset}>
+            {
+              stylesHint === 'prefetch'
+                ? <PrefetchStyle href={`${publicPath}${asset}`}/>
+                : <PreloadStyle href={`${publicPath}${asset}`}/>
+            }
+          </React.Fragment>
         ))
       }
     </>
