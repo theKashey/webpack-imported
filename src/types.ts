@@ -1,6 +1,7 @@
 export interface Chunk {
   load: number[];
   preload: number[];
+  prefetch: number[];
 }
 
 export interface Asset {
@@ -32,16 +33,19 @@ export interface ImportedStat {
 export interface ImportedTracker {
   load: number[],
   preload: number[],
+  prefetch: number[]
 }
 
 export interface RelatedAssets {
   load: string[],
   preload: string[],
+  prefetch: string[],
 }
 
 export interface RelatedImported {
   load: Record<string, string[]>,
   preload: Record<string, string[]>,
+  prefetch: Record<string, string[]>,
 }
 
 export interface RelatedImportedPack {

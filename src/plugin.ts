@@ -58,7 +58,8 @@ const getChunks = ({namedChunkGroups}: Stats.ToJsonOutput): Chunks => (
       const {chunks, children} = namedChunkGroups[key];
       acc[key] = {
         load: chunks,
-        preload: children.prefetch ? extractPrefetch(children.prefetch.chunks) : [],
+        preload: children.preload ? extractPrefetch(children.preload as any) : [],
+        prefetch: children.prefetch ? extractPrefetch(children.prefetch as any) : [],
       };
 
       return acc;

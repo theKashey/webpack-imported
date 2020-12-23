@@ -4,6 +4,7 @@ import {createImportedTracker} from "./tracker";
 const relatedToChunks = (importedStat: ImportedStat, tracker: ImportedTracker, initialChunkNames: string | string[]): ImportedTracker => {
   const load: number[] = [];
   const preload: number[] = [];
+  const prefetch: number[] = [];
 
   const chunkNames = Array.isArray(initialChunkNames) ? initialChunkNames : [initialChunkNames];
 
@@ -26,11 +27,18 @@ const relatedToChunks = (importedStat: ImportedStat, tracker: ImportedTracker, i
         preload.push(chunkId)
       }
     })
+    chunk.prefetch.forEach(chunkId => {
+      if (tracker.prefetch.indexOf(chunkId) < 0) {
+        tracker.prefetch.push(chunkId);
+        prefetch.push(chunkId)
+      }
+    })
   });
 
   return {
     load,
     preload,
+    prefetch,
   }
 };
 
@@ -49,27 +57,30 @@ const flattenType = (types: ChunkAsset[]): Record<string, string[]> => {
 };
 
 const importedScripts = (importedStep: RelatedImported): RelatedAssets => {
-  const {load, preload} = importedStep;
+  const {load, preload, prefetch} = importedStep;
   return {
     load: load.js || [],
     preload: preload.js || [],
+    prefetch: prefetch.js || [],
   }
 };
 
 const importedStyles = (importedStep: RelatedImported): RelatedAssets => {
-  const {load, preload} = importedStep;
+  const {load, preload, prefetch} = importedStep;
 
   return {
     load: load.css || [],
     preload: preload.css || [],
+    prefetch: prefetch.css || [],
   }
 };
 
 export const importAssets = (importedStat: ImportedStat, chunkNames: string | string[], tracker: ImportedTracker = createImportedTracker()): RelatedImportedPack => {
-  const {load, preload} = relatedToChunks(importedStat, tracker, chunkNames);
+  const {load, preload, prefetch} = relatedToChunks(importedStat, tracker, chunkNames);
   const raw: RelatedImported = {
     load: flattenType(load.map(chunkId => importedStat.chunkMap[chunkId])),
     preload: flattenType(preload.map(chunkId => importedStat.chunkMap[chunkId])),
+    prefetch: flattenType(prefetch.map(chunkId => importedStat.chunkMap[chunkId])),
   };
 
   return {

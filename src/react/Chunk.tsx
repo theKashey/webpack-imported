@@ -84,6 +84,16 @@ export const WebpackImport: React.FC<WebpackImportProps> = (
           </React.Fragment>
         ))
       }
+      {
+        scripts.preload.map(asset => (
+            <PreloadScript key={asset} href={`${publicPath}${asset}`} anonymous={anonymous}/>
+        ))
+      }
+      {
+        scripts.prefetch.map(asset => (
+          <PrefetchScript key={asset} href={`${publicPath}${asset}`} anonymous={anonymous}/>
+        ))
+      }
 
       {
         styles.load.map(asset => (
