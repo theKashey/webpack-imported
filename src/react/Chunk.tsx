@@ -122,7 +122,7 @@ export interface WebpackPreloadProps {
    * suppresses styles for the initial load as they are expected to be a part of critical CSS
    * styles will be placed in the correct order by calling {@link processImportedStyles}
    */
-  criticalCss?: boolean;
+  criticalCSS?: boolean;
   /**
    * should scripts be loaded as anonymous
    */
@@ -150,7 +150,7 @@ export const WebpackPreload: React.FC<WebpackPreloadProps> = ({
   chunks,
   scriptsHint,
   stylesHint,
-  criticalCss,
+  criticalCSS,
   anonymous,
   publicPath = stats.config.publicPath,
 }) => {
@@ -175,7 +175,7 @@ export const WebpackPreload: React.FC<WebpackPreloadProps> = ({
           ) : (
             <PreloadStyle href={`${publicPath}${asset}`} />
           )}
-          {criticalCss && <LoadCriticalStyle href={`${publicPath}${asset}`} />}
+          {criticalCSS && <LoadCriticalStyle href={`${publicPath}${asset}`} />}
         </React.Fragment>
       ))}
     </>
