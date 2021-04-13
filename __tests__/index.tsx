@@ -1,14 +1,7 @@
-import * as React from 'react';
-import {shallow} from 'enzyme';
+import '../src/index';
 
-describe('Specs', () => {
-  const setup = () => {
-    return {
-      
-    };
-  };
-  
-  it('Foo', () => {
+describe('Does nothing', () => {
+  it('Just works', () => {
     expect(1).toEqual(1);
   });
 });

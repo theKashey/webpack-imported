@@ -1,10 +1,11 @@
-import * as React from "react";
-import {useContext} from "react";
-import {PrefetchChunkCollectorContext} from "./context";
-import {ImportedStat} from "../types";
-import {importAssets} from "../imported";
-import {LoadCriticalStyle, LoadScript, LoadStyle} from "./Load";
-import {PrefetchScript, PrefetchStyle, PreloadScript, PreloadStyle} from "./Atoms";
+import * as React from 'react';
+import { useContext } from 'react';
+
+import { importAssets } from '../imported';
+import { ImportedStat } from '../types';
+import { PrefetchScript, PrefetchStyle, PreloadScript, PreloadStyle } from './Atoms';
+import { LoadCriticalStyle, LoadScript, LoadStyle } from './Load';
+import { PrefetchChunkCollectorContext } from './context';
 
 export interface WebpackImportProps {
   /**
@@ -18,7 +19,7 @@ export interface WebpackImportProps {
   /**
    * should prefetch or preload be used
    */
-  scriptsHint?: 'prefetch' | 'preload'
+  scriptsHint?: 'prefetch' | 'preload';
   /**
    * should scripts be loaded as anonymous
    */
@@ -35,7 +36,7 @@ export interface WebpackImportProps {
    * should found CSS files be considered as critical and NOT loaded
    * and if yes - should they be prefetched or preloaded (or nothing)
    */
-  criticalCSS?: boolean | "prefetch" | "preload";
+  criticalCSS?: boolean | 'prefetch' | 'preload';
   /**
    * public path for all assets
    */
@@ -54,66 +55,50 @@ export interface WebpackImportProps {
  *  publicPath={`${CDN}${data.config.publicPath}${mode}/`}
  * />
  */
-export const WebpackImport: React.FC<WebpackImportProps> = (
-  {
-    stats,
-    chunks,
-    scriptsHint,
-    criticalCSS,
-    anonymous,
-    async = true,
-    module,
-    publicPath = stats.config.publicPath
-  }) => {
+export const WebpackImport: React.FC<WebpackImportProps> = ({
+  stats,
+  chunks,
+  scriptsHint,
+  criticalCSS,
+  anonymous,
+  async = true,
+  module,
+  publicPath = stats.config.publicPath,
+}) => {
   const tracker = useContext(PrefetchChunkCollectorContext);
-  const {scripts, styles} = importAssets(stats, chunks, tracker);
+  const { scripts, styles } = importAssets(stats, chunks, tracker);
 
   return (
     <>
-      {
-        scripts.load.map(asset => (
-          <React.Fragment key={asset}>
-            {scriptsHint === 'prefetch' && <PrefetchScript href={`${publicPath}${asset}`} anonymous={anonymous}/>}
-            {scriptsHint === 'preload' && <PreloadScript href={`${publicPath}${asset}`} anonymous={anonymous}/>}
-            <LoadScript
-              href={`${publicPath}${asset}`}
-              async={async}
-              module={module}
-              anonymous={anonymous}
-            />
-          </React.Fragment>
-        ))
-      }
-      {
-        scripts.preload.map(asset => (
-            <PreloadScript key={asset} href={`${publicPath}${asset}`} anonymous={anonymous}/>
-        ))
-      }
-      {
-        scripts.prefetch.map(asset => (
-          <PrefetchScript key={asset} href={`${publicPath}${asset}`} anonymous={anonymous}/>
-        ))
-      }
+      {scripts.load.map((asset) => (
+        <React.Fragment key={asset}>
+          {scriptsHint === 'prefetch' && <PrefetchScript href={`${publicPath}${asset}`} anonymous={anonymous} />}
+          {scriptsHint === 'preload' && <PreloadScript href={`${publicPath}${asset}`} anonymous={anonymous} />}
+          <LoadScript href={`${publicPath}${asset}`} async={async} module={module} anonymous={anonymous} />
+        </React.Fragment>
+      ))}
+      {scripts.preload.map((asset) => (
+        <PreloadScript key={asset} href={`${publicPath}${asset}`} anonymous={anonymous} />
+      ))}
+      {scripts.prefetch.map((asset) => (
+        <PrefetchScript key={asset} href={`${publicPath}${asset}`} anonymous={anonymous} />
+      ))}
 
-      {
-        styles.load.map(asset => (
-          <React.Fragment key={asset}>
-            {
-              criticalCSS
-                ? (
-                  <>
-                    {criticalCSS === "prefetch" && <PrefetchStyle href={`${publicPath}${asset}`}/>}
-                    {criticalCSS === "preload" && <PreloadStyle href={`${publicPath}${asset}`}/>}
-                    <LoadCriticalStyle href={`${publicPath}${asset}`}/>
-                  </>
-                )
-                : <LoadStyle href={`${publicPath}${asset}`}/>
-            }
-          </React.Fragment>
-        ))
-      }
+      {styles.load.map((asset) => (
+        <React.Fragment key={asset}>
+          {criticalCSS ? (
+            <>
+              {criticalCSS === 'prefetch' && <PrefetchStyle href={`${publicPath}${asset}`} />}
+              {criticalCSS === 'preload' && <PreloadStyle href={`${publicPath}${asset}`} />}
+              <LoadCriticalStyle href={`${publicPath}${asset}`} />
+            </>
+          ) : (
+            <LoadStyle href={`${publicPath}${asset}`} />
+          )}
+        </React.Fragment>
+      ))}
     </>
-  )
+  );
 };
 
 export interface WebpackPreloadProps {
@@ -132,7 +117,12 @@ export interface WebpackPreloadProps {
   /**
    * should prefetch or preload be used
    */
-  stylesHint: 'prefetch' | 'preload'
+  stylesHint: 'prefetch' | 'preload';
+  /**
+   * suppresses styles for the initial load as they are expected to be a part of critical CSS
+   * styles will be placed in the correct order by calling {@link processImportedStyles}
+   */
+  criticalCss?: boolean;
   /**
    * should scripts be loaded as anonymous
    */
@@ -155,42 +145,39 @@ export interface WebpackPreloadProps {
  *  publicPath={`${CDN}${data.config.publicPath}${mode}/`}
  * />
  */
-export const WebpackPreload: React.FC<WebpackPreloadProps> = (
-  {
-    stats,
-    chunks,
-    scriptsHint,
-    stylesHint,
-    anonymous,
-    publicPath = stats.config.publicPath
-  }) => {
+export const WebpackPreload: React.FC<WebpackPreloadProps> = ({
+  stats,
+  chunks,
+  scriptsHint,
+  stylesHint,
+  criticalCss,
+  anonymous,
+  publicPath = stats.config.publicPath,
+}) => {
   const tracker = useContext(PrefetchChunkCollectorContext);
-  const {scripts, styles} = importAssets(stats, chunks, tracker);
+  const { scripts, styles } = importAssets(stats, chunks, tracker);
 
   return (
     <>
-      {
-        scripts.load.map(asset => (
-          <React.Fragment key={asset}>
-            {
-              scriptsHint === 'prefetch'
-                ? <PrefetchScript href={`${publicPath}${asset}`} anonymous={anonymous}/>
-                : <PreloadScript href={`${publicPath}${asset}`} anonymous={anonymous}/>
-            }
-          </React.Fragment>
-        ))
-      }
-      {
-        styles.load.map(asset => (
-          <React.Fragment key={asset}>
-            {
-              stylesHint === 'prefetch'
-                ? <PrefetchStyle href={`${publicPath}${asset}`}/>
-                : <PreloadStyle href={`${publicPath}${asset}`}/>
-            }
-          </React.Fragment>
-        ))
-      }
+      {scripts.load.map((asset) => (
+        <React.Fragment key={asset}>
+          {scriptsHint === 'prefetch' ? (
+            <PrefetchScript href={`${publicPath}${asset}`} anonymous={anonymous} />
+          ) : (
+            <PreloadScript href={`${publicPath}${asset}`} anonymous={anonymous} />
+          )}
+        </React.Fragment>
+      ))}
+      {styles.load.map((asset) => (
+        <React.Fragment key={asset}>
+          {stylesHint === 'prefetch' ? (
+            <PrefetchStyle href={`${publicPath}${asset}`} />
+          ) : (
+            <PreloadStyle href={`${publicPath}${asset}`} />
+          )}
+          {criticalCss && <LoadCriticalStyle href={`${publicPath}${asset}`} />}
+        </React.Fragment>
+      ))}
     </>
-  )
+  );
 };
