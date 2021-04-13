@@ -60,7 +60,7 @@
         "tslib",
         "react"
       ],
-      "limit": "1.5 KB"
+      "limit": "3 KB"
     }
   ],
   "peerDependenciesMeta": {
