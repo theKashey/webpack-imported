@@ -64,8 +64,11 @@ const getChunks = ({ namedChunkGroups }: WebStats): Chunks =>
     return acc;
   }, {} as Chunks);
 
-const resolveAliases = (cwd: string, aliases: Record<string, string>): Record<string, string> =>
-  Object.keys(aliases).reduce((acc, key) => ({ ...acc, [key]: relative(cwd, aliases[key]) }), {});
+const resolveAliases = (cwd: string, aliases: Record<string, string | string[]>): Record<string, string | string[]> => {
+  const alias = aliases[key];
+  const paths = Array.isArray(alias) ? alias.map(aliasPath => relative(cwd, aliasPath)) : relative(cwd, alias);
+  return Object.keys(aliases).reduce((acc, key) => ({ ...acc, [key]: paths }), {})
+};
 
 export const importStats = (stats: WebStats, extraProps: Record<string, any> = {}): ImportedStat => {
   const cwd = process.cwd();
