@@ -1,22 +1,22 @@
 import { writeFileSync } from 'fs';
 import { extname, relative } from 'path';
 
-import { Compiler, Plugin, compilation, Configuration, Stats } from 'webpack';
+import { Compiler, Compilation, sources, StatsModule, StatsCompilation } from 'webpack';
 
 import { ChunkMap, Chunks, ImportedStat, Asset } from './types';
 
 const merge = require('lodash/merge');
 
 type WebStats = Required<
-  Pick<Stats.ToJsonOutput, 'chunks' | 'assets' | 'namedChunkGroups' | 'publicPath' | 'outputPath'>
+  Pick<StatsCompilation, 'chunks' | 'assets' | 'namedChunkGroups' | 'publicPath' | 'outputPath'>
 >;
 
 const moduleToChunks = ({ chunks }: WebStats) => {
   const manifest: Record<string, number | string> = {};
   chunks.forEach(({ id, modules }) => {
     if (modules) {
-      modules.forEach((module: Stats.FnModules) => {
-        manifest[module.id] = id;
+      modules.forEach((module: StatsModule) => {
+        if (module.id && id) manifest[module.id] = id;
       });
     }
   });
@@ -39,7 +39,7 @@ const extractPrefetch = (prefetch: any[] = []): number[] =>
 
 const mapChunkNumbers = ({ assets }: WebStats): ChunkMap =>
   assets.reduce((acc, { name, chunks }) => {
-    chunks.forEach((chunk) => {
+    chunks?.forEach((chunk) => {
       acc[chunk] = acc[chunk] || {};
       const type = getAssetType(name);
       acc[chunk][type] = acc[chunk][type] || [];
@@ -53,23 +53,23 @@ const getAssets = ({ assets }: WebStats): Asset[] =>
   assets!.map(({ name, size }) => ({ name, size, type: getAssetType(name) }));
 
 const getChunks = ({ namedChunkGroups }: WebStats): Chunks =>
-  Object.keys(namedChunkGroups!).reduce((acc, key) => {
+  Object.keys(namedChunkGroups).reduce((acc, key) => {
     const { chunks, children } = namedChunkGroups[key];
     acc[key] = {
-      load: chunks,
-      preload: children.preload ? extractPrefetch(children.preload as any) : [],
-      prefetch: children.prefetch ? extractPrefetch(children.prefetch as any) : [],
+      load: chunks || [],
+      preload: children?.preload ? extractPrefetch(children.preload) : [],
+      prefetch: children?.prefetch ? extractPrefetch(children.prefetch) : [],
     };
 
     return acc;
   }, {} as Chunks);
- 
+
 const resolveAliases = (cwd: string, aliases: Record<string, string | string[]>): Record<string, string | string[]> => {
   return Object.keys(aliases).reduce((acc, key) => {
     const alias = aliases[key];
-    const paths = Array.isArray(alias) ? alias.map(aliasPath => relative(cwd, aliasPath)) : relative(cwd, alias);
-    return { ...acc, [key]: paths }
-  }, {})
+    const paths = Array.isArray(alias) ? alias.map((aliasPath) => relative(cwd, aliasPath)) : relative(cwd, alias);
+    return { ...acc, [key]: paths };
+  }, {});
 };
 
 export const importStats = (stats: WebStats, extraProps: Record<string, any> = {}): ImportedStat => {
@@ -101,10 +101,10 @@ interface Options {
 /**
  * Webpack plugin
  */
-export class ImportedPlugin implements Plugin {
+export class ImportedPlugin {
   constructor(private output: string, private options: Options = {}, private cache = {}) {}
 
-  emitCallback = (compilation: compilation.Compilation, done: () => void) => {
+  handleEmit = (compilation: Compilation) => {
     const stats = compilation.getStats().toJson({
       hash: true,
       publicPath: true,
@@ -119,7 +119,7 @@ export class ImportedPlugin implements Plugin {
     const cwd = process.cwd();
     // not quite yet
     // const modules = compilation.options.resolve.modules;
-    const aliases = resolveAliases(cwd, ((compilation as any).options as Configuration).resolve!.alias || {});
+    const aliases = resolveAliases(cwd, (compilation as any).options.resolve!.alias || {});
     // const {publicPath, outputPath} = stats;
 
     const result: ImportedStat = importStats(stats, { aliases });
@@ -130,25 +130,49 @@ export class ImportedPlugin implements Plugin {
 
     const stringResult = JSON.stringify(result, null, 2);
 
-    if (this.output) {
-      compilation.assets[this.output] = {
-        size() {
-          return stringResult.length;
-        },
-        source() {
-          return stringResult;
-        },
-      };
-    }
-
     if (this.options.saveToFile) {
       writeFileSync(this.options.saveToFile, stringResult);
     }
 
-    done();
+    if (this.output) {
+      return {
+        source() {
+          return stringResult;
+        },
+        size() {
+          return stringResult.length;
+        },
+      };
+    }
+
+    return null;
   };
 
   apply(compiler: Compiler) {
-    compiler.hooks.emit.tapAsync('ImportedPlugin', this.emitCallback);
+    const version = 'jsonpFunction' in compiler.options.output ? 4 : 5;
+
+    if (version === 4) {
+      compiler.hooks.emit.tap('ImportedPlugin', (compilation) => {
+        const asset = this.handleEmit(compilation);
+        if (asset) {
+          compilation.assets[this.output] = asset as sources.Source;
+        }
+      });
+    } else {
+      compiler.hooks.make.tap('ImportedPlugin', (compilation) => {
+        compilation.hooks.processAssets.tap(
+          {
+            name: 'ImportedPlugin',
+            stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_REPORT,
+          },
+          () => {
+            const asset = this.handleEmit(compilation);
+            if (asset) {
+              compilation.emitAsset(this.output, asset as sources.Source);
+            }
+          }
+        );
+      });
+    }
   }
 }

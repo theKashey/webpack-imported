@@ -29,7 +29,7 @@
     "@size-limit/preset-small-lib": "^2.1.5",
     "@theuiteam/lib-builder": "^0.1.3",
     "@types/lodash": "^4.14.138",
-    "@types/webpack": "^4.39.1"
+    "@types/webpack": "^5.28.5"
   },
   "engines": {
     "node": ">=10"
