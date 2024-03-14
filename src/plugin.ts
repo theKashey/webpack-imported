@@ -1,9 +1,9 @@
 import { writeFileSync } from 'fs';
 import { extname, relative } from 'path';
 
-import { Compiler, Compilation, sources, StatsModule, StatsCompilation } from 'webpack';
+import type { Compiler, Compilation, sources, StatsModule, StatsCompilation } from 'webpack';
 
-import { ChunkMap, Chunks, ImportedStat, Asset } from './types';
+import type { ChunkMap, Chunks, ImportedStat, Asset } from './types';
 
 const merge = require('lodash/merge');
 
