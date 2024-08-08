@@ -1,3 +1,12 @@
+## [1.3.1](https://github.com/theKashey/webpack-imported/compare/v1.3.0...v1.3.1) (2024-08-08)
+
+
+### Bug Fixes
+
+* added React 18 in peerDeps ([81b42a4](https://github.com/theKashey/webpack-imported/commit/81b42a4b8f4e879fa33cc9cf90140cd7e6f41224))
+
+
+
 # [1.3.0](https://github.com/theKashey/webpack-imported/compare/v1.2.2...v1.3.0) (2024-03-14)
 
 
